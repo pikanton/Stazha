@@ -10,8 +10,8 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
 {
     public class ProviderFillwordLevel : IProviderFillwordLevel
     {
-        private const string _wordsListPath = "Assets/App/Resources/Fillwords/words_list.txt";
-        private const string _packPath = "Assets/App/Resources/Fillwords/pack_0.txt";
+        private const string _wordsListPath = "Fillwords/words_list";
+        private const string _packPath = "Fillwords/pack_0";
 
         public GridFillWords LoadModel(int index)
         {
@@ -49,21 +49,17 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
 
         private string GetInfoLine(int index)
         {
-            using (StreamReader reader = new(_packPath))
+            TextAsset packAsset = Resources.Load<TextAsset>(_packPath);
+            if (packAsset != null)
             {
-                int currentLine = 0;
-                string line;
+                string[] lines = packAsset.text.Split('\n');
 
-                while ((line = reader.ReadLine()) != null)
+                if (index > 0 && index <= lines.Length)
                 {
-                    currentLine++;
-                    if (currentLine == index)
-                    {
-                        return line;
-                    }
+                    return lines[index-1].Replace("\r","");
                 }
-                return null;
             }
+            return null;
         }
 
         private List<int> GetWordIndexes(string levelInfoLine)
@@ -77,24 +73,23 @@ namespace App.Scripts.Scenes.SceneFillwords.Features.ProviderLevel
             return wordIndexes;
         }
 
-        private List<string> ReadLinesByIndexes(string filePath, List<int> indexes)
+        private List<string> ReadLinesByIndexes(string resourcePath, List<int> indexes)
         {
             List<string> lines = new();
+            TextAsset textAsset = Resources.Load<TextAsset>(resourcePath);
 
-            using (StreamReader reader = new(filePath))
+            if (textAsset != null)
             {
-                int currentLine = -1;
-                string line;
-
-                while ((line = reader.ReadLine()) != null)
+                string[] allLines = textAsset.text.Split('\n');
+                foreach (int index in indexes)
                 {
-                    currentLine++;
-                    if (indexes.Contains(currentLine))
+                    if (index >= 0 && index < allLines.Length)
                     {
-                        lines.Add(line);
+                        lines.Add(allLines[index].Replace("\r",""));
                     }
                 }
             }
+
             return lines;
         }
 

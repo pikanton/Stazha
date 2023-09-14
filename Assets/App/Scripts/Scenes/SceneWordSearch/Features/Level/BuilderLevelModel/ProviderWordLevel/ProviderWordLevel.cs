@@ -9,10 +9,19 @@ namespace App.Scripts.Scenes.SceneWordSearch.Features.Level.BuilderLevelModel.Pr
     {
         public LevelInfo LoadLevelData(int levelIndex)
         {
-            string filePath = $"Assets/App/Resources/WordSearch/Levels/{levelIndex}.json";
-            string jsonString = File.ReadAllText(filePath);
-            LevelInfo levelInfo = JsonUtility.FromJson<LevelInfo>(jsonString);
-            return levelInfo;
+            string resourcePath = $"WordSearch/Levels/{levelIndex}";
+            TextAsset levelAsset = Resources.Load<TextAsset>(resourcePath);
+
+            if (levelAsset != null)
+            {
+                string jsonString = levelAsset.text;
+                LevelInfo levelInfo = JsonUtility.FromJson<LevelInfo>(jsonString);
+                return levelInfo;
+            }
+            else
+            {
+                throw new Exception($"Level {levelIndex} not found in resources.");
+            }
         }
     }
 }
